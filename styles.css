@@ -2583,9 +2583,7 @@ button {
   }
 
   .finale-v2[data-mobile-time]::after {
-    color: #31516f;
-    background: rgba(255, 255, 255, .78);
-    border-color: rgba(16, 35, 63, .1);
+    display: none;
   }
 
   .final-photo {
