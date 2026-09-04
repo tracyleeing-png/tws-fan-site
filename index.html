@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="24/7 WITH TWS——写给 TWS 与 42 的非官方粉丝网站。" />
+    <meta name="theme-color" content="#dff3ff" />
+    <title>24/7 WITH TWS · 42</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="assets/home-beach-wide.png" as="image" />
+    <link rel="preload" href="assets/home-beach-group.png" as="image" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+
+    <header class="site-header" id="top">
+      <nav class="nav shell" aria-label="主导航">
+        <a class="brand" href="#home" aria-label="返回首页">
+          <span class="brand-mark">24</span>
+          <span class="brand-copy"><b>TWS</b><small>TWENTY FOUR SEVEN WITH US</small></span>
+        </a>
+        <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links">
+          <span></span><span></span><span></span><span class="sr-only">打开菜单</span>
+        </button>
+        <div class="nav-links" id="nav-links">
+          <a href="#home">HOME</a>
+          <a href="#members">MEMBERS</a>
+          <a href="#music">DISCOGRAPHY</a>
+          <a href="#mood">42 RADIO</a>
+          <a href="#timeline">TIMELINE</a>
+          <a href="#letters">MESSAGE</a>
+        </div>
+        <button class="theme-button" type="button" aria-label="切换昼夜模式" title="切换昼夜模式">
+          <span class="theme-icon" aria-hidden="true">☼</span>
+        </button>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero hero-v2" id="home" aria-labelledby="hero-title">
+        <div class="hero-photo-wide" aria-hidden="true"></div>
+        <div class="hero-v2-wash" aria-hidden="true"></div>
+        <div class="hero-v2-content shell">
+          <p class="eyebrow"><span></span> 01 · LIVE IN THIS MOMENT</p>
+          <h1 id="hero-title">24/7<br />WITH TWS<span>:</span></h1>
+          <p class="hero-only-copy">于是每一个普通瞬间，都可以成为和 TWS 一起珍藏的特别一天。</p>
+
+          <div class="live-time" aria-label="当前时间">
+            <div class="clock-orbit" id="clock-orbit" aria-hidden="true">
+              <span class="orbit-label orbit-24">24</span><span class="orbit-label orbit-7">7</span>
+              <i class="clock-hand hour-hand" id="hour-hand"></i>
+              <i class="clock-hand minute-hand" id="minute-hand"></i>
+              <i class="clock-hand second-hand" id="second-hand"></i>
+              <b></b>
+            </div>
+            <div class="digital-time">
+              <span>NOW · LOCAL TIME</span>
+              <strong id="clock">--:--:--</strong>
+              <small id="home-date">----.--.-- · ---</small>
+              <div class="day-meter"><i id="day-meter-fill"></i></div>
+              <em id="day-progress">00.0% OF TODAY</em>
+            </div>
+          </div>
+        </div>
+
+        <figure class="hero-group-photo reveal" data-tilt>
+          <img src="assets/home-beach-group.png" alt="TWS 六位成员在海边的合照" />
+          <figcaption><span>24 / 7</span><b>WITH US</b><small>BEACH RECORD</small></figcaption>
+        </figure>
+        <div class="hero-coordinate" aria-hidden="true">24° / 7° · ALWAYS</div>
+      </section>
+
+      <section class="members section" id="members">
+        <div class="shell">
+          <div class="section-heading section-heading-row reveal">
+            <div><p class="kicker">02 · PROFILE</p><h2>MEMBERS <i>&amp;</i> 42</h2></div>
+            <p>Click each card to open the full profile.</p>
+          </div>
+
+          <div class="member-grid">
+            <button class="member-card mint reveal" type="button" data-member="shinyu">
+              <span class="member-no">01</span><span class="member-shape">S</span>
+              <span class="member-info"><small>2003.11.07</small><strong>SHINYU</strong><em>申惟 · 신유</em></span><span class="card-arrow">↗</span>
+            </button>
+            <button class="member-card lemon reveal" type="button" data-member="dohoon">
+              <span class="member-no">02</span><span class="member-shape">D</span>
+              <span class="member-info"><small>2005.01.30</small><strong>DOHOON</strong><em>道勋 · 도훈</em></span><span class="card-arrow">↗</span>
+            </button>
+            <button class="member-card blue reveal" type="button" data-member="youngjae">
+              <span class="member-no">03</span><span class="member-shape">Y</span>
+              <span class="member-info"><small>2005.05.31</small><strong>YOUNGJAE</strong><em>英宰 · 영재</em></span><span class="card-arrow">↗</span>
+            </button>
+            <button class="member-card coral reveal" type="button" data-member="hanjin">
+              <span class="member-no">04</span><span class="member-shape">H</span>
+              <span class="member-info"><small>2006.01.05</small><strong>HANJIN</strong><em>韩振 · 한진</em></span><span class="card-arrow">↗</span>
+            </button>
+            <button class="member-card lilac reveal" type="button" data-member="jihoon">
+              <span class="member-no">05</span><span class="member-shape">J</span>
+              <span class="member-info"><small>2006.03.28</small><strong>JIHOON</strong><em>志薰 · 지훈</em></span><span class="card-arrow">↗</span>
+            </button>
+            <button class="member-card navy reveal" type="button" data-member="kyungmin">
+              <span class="member-no">06</span><span class="member-shape">K</span>
+              <span class="member-info"><small>2007.10.02</small><strong>KYUNGMIN</strong><em>炅潣 · 이경민</em></span><span class="card-arrow">↗</span>
+            </button>
+            <a class="member-card group-card reveal" href="https://zh.wikipedia.org/wiki/TWS_(%E5%9C%98%E9%AB%94)" target="_blank" rel="noreferrer">
+              <span class="member-no">07 · GROUP</span><span class="member-shape">TWS</span>
+              <span class="member-info"><small>2024.01.22</small><strong>TWS</strong><em>TWENTY FOUR SEVEN WITH US</em></span><span class="card-arrow">↗</span>
+            </a>
+          </div>
+
+          <article class="fan-card reveal">
+            <div class="fan-symbol"><span>OFFICIAL FAN CLUB</span><strong>42</strong><small>SAI · 사이</small></div>
+            <div class="fan-copy"><span>ANNOUNCED · 2024.04.02</span><h3>TWS &amp; 42</h3><p>“사이”在韩语中意为“关系”。42 代表与 TWS 一起度过每天 24 小时、每周 7 天，并与 TWS 拥有最特别关系的粉丝们。</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="music section music-v2" id="music">
+        <div class="shell">
+          <div class="section-heading section-heading-row reveal">
+            <div><p class="kicker">03 · 2024 — 2026</p><h2>DISCOGRAPHY</h2></div>
+            <a class="text-link" href="https://tws-official.jp/discography" target="_blank" rel="noreferrer">OFFICIAL DISCOGRAPHY <span>↗</span></a>
+          </div>
+          <div class="album-track" aria-label="TWS discography in chronological order">
+            <a class="album-card era-sparkling reveal" href="https://y.qq.com/n/ryqq/albumDetail/0027RmVa44LJZw" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-orbit"></span><b>01</b><em>SPARKLING<br />BLUE</em></div><div class="album-meta"><span>2024.01.22 · 1ST MINI ALBUM</span><h3>Sparkling Blue</h3></div></a>
+            <a class="album-card era-summer reveal" href="https://y.qq.com/n/ryqq/albumDetail/000F8kai4F3Uz5" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-ball"></span><b>02</b><em>SUMMER<br />BEAT!</em></div><div class="album-meta"><span>2024.06.24 · 2ND MINI ALBUM</span><h3>SUMMER BEAT!</h3></div></a>
+            <a class="album-card era-bell reveal" href="https://y.qq.com/n/ryqq/albumDetail/003yEKfF4XgnbU" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-bell">◌</span><b>03</b><em>LAST<br />BELL</em></div><div class="album-meta"><span>2024.11.25 · 1ST SINGLE ALBUM</span><h3>Last Bell</h3></div></a>
+            <a class="album-card era-try reveal" href="https://y.qq.com/n/ryqq/albumDetail/001O4Gfp4I9M56" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-arrow">↗</span><b>04</b><em>TRY<br />WITH US</em></div><div class="album-meta"><span>2025.04.21 · 3RD MINI ALBUM</span><h3>TRY WITH US</h3></div></a>
+            <a class="album-card era-japan reveal" href="https://y.qq.com/n/ryqq/albumDetail/001apz8v3b4qE8" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-sun">JP</span><b>05</b><em>HAJIME<br />MASHITE</em></div><div class="album-meta"><span>2025.07.02 · JAPAN 1ST SINGLE</span><h3>Hajimemashite</h3></div></a>
+            <a class="album-card era-play reveal" href="https://y.qq.com/n/ryqq/albumDetail/003n1Koq0JqUv7" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-grid"></span><b>06</b><em>PLAY<br />HARD</em></div><div class="album-meta"><span>2025.10.13 · 4TH MINI ALBUM</span><h3>play hard</h3></div></a>
+            <a class="album-card era-again reveal" href="https://y.qq.com/n/ryqq/albumDetail/002s4rDK1HodCo" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-loop">↻</span><b>07</b><em>NICE TO SEE<br />YOU AGAIN</em></div><div class="album-meta"><span>2026.02.09 · DIGITAL SINGLE</span><h3>Nice to see you again</h3></div></a>
+            <a class="album-card era-no-tragedy reveal" href="https://y.qq.com/n/ryqq/albumDetail/001lBs6M2HZiPf" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-spark">✦</span><b>08</b><em>NO<br />TRAGEDY</em></div><div class="album-meta"><span>2026.04.27 · 5TH MINI ALBUM</span><h3>NO TRAGEDY</h3></div></a>
+            <a class="album-card era-dream reveal" href="https://y.qq.com/n/ryqq/search?w=Dream%20With%20Us%20TWS&amp;t=song" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-flag">⚑</span><b>09</b><em>DREAM<br />WITH US</em></div><div class="album-meta"><span>2026.06.11 · DIGITAL SINGLE</span><h3>Dream With Us</h3></div></a>
+            <a class="album-card era-soda reveal" href="https://y.qq.com/n/ryqq/albumDetail/002zDaj51mnD55" target="_blank" rel="noreferrer"><div class="album-cover"><span class="album-bubbles">○°○</span><b>10</b><em>SODA<br />SODA</em></div><div class="album-meta"><span>2026.08.04 · JAPAN 2ND SINGLE</span><h3>SODA SODA</h3></div></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="mood section" id="mood">
+        <div class="mood-inner shell">
+          <div class="mood-intro reveal">
+            <p class="kicker">04 · TODAY'S B-SIDE</p>
+            <h2>今天的你，<br />适合听哪首 TWS？</h2>
+            <p>选一种此刻的心情，我们会从青春歌单里递给你一首歌。</p>
+            <div class="mood-buttons" role="group" aria-label="选择此刻的心情">
+              <button type="button" data-mood="heart">心动</button><button type="button" data-mood="sunny">晴朗</button><button type="button" data-mood="friend">友情</button><button type="button" data-mood="courage">勇气</button><button type="button" data-mood="sunset">晚霞</button><button type="button" data-mood="energy">充电</button>
+            </div>
+          </div>
+          <article class="song-card reveal" id="song-card" aria-live="polite">
+            <span class="song-label">42 RADIO · NOW PLAYING</span><div class="disc" aria-hidden="true"><span></span></div>
+            <div class="song-copy"><p id="song-mood">FOR YOUR FIRST MEETING</p><h3 id="song-title">plot twist</h3><span id="song-album">Sparkling Blue · 2024</span><blockquote id="song-message">“计划之外的相遇，也许正是青春最好的开场。”</blockquote><a id="song-link" href="https://y.qq.com/n/ryqq/songDetail/002DQFDz4VpodY" target="_blank" rel="noreferrer">去 QQ 音乐听歌 <span>↗</span></a></div>
+            <button class="shuffle" id="shuffle-song" type="button" aria-label="随机推荐另一首歌">↻</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="timeline section timeline-v2" id="timeline">
+        <div class="shell">
+          <div class="section-heading reveal"><p class="kicker">05 · HISTORY</p><h2>TWS TIMELINE</h2></div>
+          <div class="timeline-scroll">
+            <div class="timeline-line">
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/songDetail/004LyR0g49W9pv" target="_blank" rel="noreferrer"><time>2024.01.02</time><span></span><h3>Oh Mymy : 7s</h3><p>PRE-RELEASE SINGLE</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/0027RmVa44LJZw" target="_blank" rel="noreferrer"><time>2024.01.22</time><span></span><h3>Official Debut</h3><p>SPARKLING BLUE</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://www.youtube.com/@TWS_PLEDIS/search?query=42%20SAI" target="_blank" rel="noreferrer"><time>2024.04.02</time><span></span><h3>42 · SAI</h3><p>OFFICIAL FAN CLUB NAME</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/000F8kai4F3Uz5" target="_blank" rel="noreferrer"><time>2024.06.24</time><span></span><h3>SUMMER BEAT!</h3><p>2ND MINI ALBUM</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/003yEKfF4XgnbU" target="_blank" rel="noreferrer"><time>2024.11.25</time><span></span><h3>Last Bell</h3><p>1ST SINGLE ALBUM</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/001O4Gfp4I9M56" target="_blank" rel="noreferrer"><time>2025.04.21</time><span></span><h3>TRY WITH US</h3><p>3RD MINI ALBUM</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://www.pledis.co.kr/artist/detail/TWS/notice/15826/?currentPage=1" target="_blank" rel="noreferrer"><time>2025.06.20</time><span></span><h3>24/7:WITH:US</h3><p>1ST TOUR · SEOUL</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/001apz8v3b4qE8" target="_blank" rel="noreferrer"><time>2025.07.02</time><span></span><h3>Japan Debut</h3><p>HAJIMEMASHITE</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/003n1Koq0JqUv7" target="_blank" rel="noreferrer"><time>2025.10.13</time><span></span><h3>play hard</h3><p>4TH MINI ALBUM</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/001lBs6M2HZiPf" target="_blank" rel="noreferrer"><time>2026.04.27</time><span></span><h3>NO TRAGEDY</h3><p>5TH MINI ALBUM</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/search?w=Dream%20With%20Us%20TWS&amp;t=song" target="_blank" rel="noreferrer"><time>2026.06.11</time><span></span><h3>Dream With Us</h3><p>DIGITAL SINGLE</p><b>OPEN ↗</b></a>
+              <a class="timeline-item reveal" href="https://y.qq.com/n/ryqq/albumDetail/002zDaj51mnD55" target="_blank" rel="noreferrer"><time>2026.08.04</time><span></span><h3>SODA SODA</h3><p>JAPAN 2ND SINGLE</p><b>OPEN ↗</b></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="letters section" id="letters">
+        <div class="shell letters-grid">
+          <div class="letters-intro reveal">
+            <p class="kicker">06 · MESSAGE BOARD</p><h2>42们，<br />请尽情留言吧！！！</h2>
+            <form class="letter-form" id="letter-form">
+              <label>你的署名<input id="letter-name" name="name" maxlength="16" placeholder="一位 42" autocomplete="nickname" /></label>
+              <label>想写下的话<textarea id="letter-message" name="message" maxlength="100" rows="4" required placeholder="今天也因为 TWS 变成了闪闪发光的一天……"></textarea></label>
+              <div class="form-bottom"><span id="letter-count">0 / 100</span><button class="button button-primary" type="submit">贴到留言墙 <span>＋</span></button></div>
+            </form>
+          </div>
+          <div class="note-wall reveal" id="note-wall" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="finale finale-v2">
+        <div class="final-photo final-watermelon" aria-hidden="true"></div><div class="final-photo final-soda" aria-hidden="true"></div><div class="final-overlay" aria-hidden="true"></div>
+        <div class="shell finale-inner reveal"><p>TWENTY FOUR SEVEN WITH US</p><h2>TWS <i>:</i> 42</h2><span class="final-time" id="final-time">--:--:--</span><a class="button button-light" href="#home">BACK TO 00:00 <span>↑</span></a></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div><a class="brand footer-brand" href="#home"><span class="brand-mark">42</span><span class="brand-copy"><b>WITH TWS</b><small>FAN-MADE ARCHIVE</small></span></a></div>
+        <div class="official-links"><p>OFFICIAL LINKS</p><a href="https://www.pledis.co.kr/artist/detail/TWS/" target="_blank" rel="noreferrer">Website ↗</a><a href="https://www.youtube.com/@TWS_PLEDIS" target="_blank" rel="noreferrer">YouTube ↗</a><a href="https://www.instagram.com/tws_pledis/" target="_blank" rel="noreferrer">Instagram ↗</a><a href="https://weverse.io/tws" target="_blank" rel="noreferrer">Weverse ↗</a></div>
+        <div class="footer-note"><p>UNOFFICIAL FAN PROJECT · NOT AFFILIATED WITH PLEDIS ENTERTAINMENT OR HYBE.</p><span>24 / 7 · TWS &amp; 42</span></div>
+      </div>
+    </footer>
+
+    <dialog class="member-dialog member-dialog-v2" id="member-dialog">
+      <button class="dialog-close" type="button" aria-label="关闭成员档案">×</button><div class="dialog-index" id="dialog-index">01</div><div class="dialog-monogram" id="dialog-monogram">S</div>
+      <div class="dialog-copy"><span id="dialog-date">2003.11.07</span><h2 id="dialog-name">SHINYU</h2><p class="dialog-korean" id="dialog-korean">申惟 · 신유</p><dl class="profile-facts" id="dialog-facts"></dl><a id="dialog-link" href="#" target="_blank" rel="noreferrer">OPEN PROFILE ENTRY ↗</a></div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite">纸条已经贴好啦 ✦</div>
+    <noscript><p class="noscript">请开启 JavaScript，以体验实时时钟、成员档案、心情选歌和留言墙。</p></noscript>
+  </body>
+</html>
