@@ -2016,3 +2016,81 @@ button {
   .digital-time { min-width: 0; flex: 1; }
   .digital-time strong { font-size: 27px; }
 }
+
+/* Portrait phones: keep the same visual language with quieter, better-scaled symbols. */
+@media (max-width: 480px) and (orientation: portrait) {
+  .shell { width: min(100% - 24px, 420px); }
+  .section { padding: 76px 0; }
+
+  .nav { height: 62px; gap: 10px; }
+  .brand { gap: 8px; }
+  .brand-mark { width: 34px; font-size: 12px; }
+  .brand-copy b { font-size: 15px; }
+  .nav-links { top: 62px; left: 12px; right: 12px; padding: 8px; }
+  .theme-icon { font-size: 15px; }
+  .menu-button > span:not(.sr-only) { width: 14px; }
+
+  .hero-v2 { min-height: max(760px, 100svh); }
+  .hero-v2-content { padding-top: 104px; }
+  .hero-v2 h1 { font-size: clamp(56px, 17vw, 72px); }
+  .live-time { gap: 11px; margin-top: 22px; padding: 9px 14px 9px 9px; }
+  .clock-orbit { width: 62px; }
+  .clock-orbit::before { inset: 4px; }
+  .clock-orbit::after { inset: 11px; }
+  .orbit-label { font-size: 7px; }
+  .orbit-24 { top: 7px; }
+  .orbit-7 { right: 8px; }
+  .clock-hand { height: 14px; }
+  .minute-hand { height: 18px; }
+  .second-hand { height: 21px; }
+  .clock-orbit > b { width: 6px; }
+  .digital-time strong { font-size: 24px; }
+  .digital-time small { font-size: 8px; }
+  .hero-group-photo { right: 12px; left: 12px; bottom: 24px; }
+
+  .day-card { min-height: 292px; padding: 24px; }
+  .day-weather { gap: 14px; margin-top: 24px; }
+  .day-weather .sun { width: 46px; font-size: 24px; }
+
+  .member-grid { gap: 12px; margin-top: 42px; }
+  .member-card { min-height: 248px; padding: 20px; }
+  .member-shape { font-size: 112px; }
+  .member-info { left: 20px; bottom: 20px; }
+  .member-info strong { font-size: 30px; }
+  .card-arrow { top: 15px; right: 15px; width: 32px; font-size: 13px; }
+  .group-card { min-height: 200px; }
+  .group-card .member-shape { right: 4%; font-size: 62px; }
+
+  .fan-card { gap: 20px; padding: 18px; }
+  .fan-symbol { min-height: 148px; border-radius: 18px; }
+  .fan-symbol::after { font-size: 108px; }
+  .fan-symbol strong { font-size: 56px; }
+
+  .album-track { gap: 42px; margin-top: 48px; }
+  .album-cover { padding: 20px; }
+  .album-cover em { left: 20px; bottom: 18px; font-size: 35px; }
+  .album-orbit { width: 36%; }
+  .album-ball { width: 34%; }
+  .album-bell { font-size: 96px; }
+  .album-arrow { font-size: 90px; }
+  .album-spark { font-size: 72px; }
+  .album-sun { font-size: 72px; }
+  .album-loop { font-size: 86px; }
+  .album-flag { font-size: 78px; }
+  .album-bubbles { font-size: 42px; }
+
+  .song-card { min-height: 455px; padding: 24px; }
+  .disc { top: 62px; right: -54px; width: 190px; }
+  .shuffle { top: 20px; right: 20px; width: 42px; font-size: 16px; }
+  .song-copy { max-width: 90%; margin-top: 170px; }
+  .song-copy h3 { font-size: 40px; }
+
+  .timeline-v2 .timeline-scroll { margin-top: 44px; }
+  .timeline-v2 .timeline-line { grid-template-columns: repeat(12, 174px); }
+  .timeline-v2 .timeline-item { min-height: 200px; }
+
+  .member-dialog-v2 .dialog-monogram { min-height: 132px; font-size: 104px; }
+  .dialog-close { width: 36px; height: 36px; font-size: 18px; }
+  .finale-v2 { min-height: 620px; }
+  .finale-v2 h2 { font-size: clamp(68px, 22vw, 92px); }
+}
