@@ -1927,18 +1927,7 @@ button {
 }
 
 .finale-v2::before {
-  position: absolute;
-  z-index: 0;
-  top: 50%;
-  left: 50%;
-  display: block;
-  width: min(72vw, 860px);
-  aspect-ratio: 1;
-  content: "";
-  border: 1px solid rgba(22, 119, 255, .16);
-  border-radius: 50%;
-  box-shadow: 0 0 0 70px rgba(255, 255, 255, .09), 0 0 0 140px rgba(22, 119, 255, .04);
-  transform: translate(-50%, -50%);
+  display: none;
 }
 
 .finale-v2::after { display: none; }
@@ -2597,11 +2586,6 @@ button {
     color: #31516f;
     background: rgba(255, 255, 255, .78);
     border-color: rgba(16, 35, 63, .1);
-  }
-
-  .finale-v2::before {
-    width: 460px;
-    box-shadow: 0 0 0 44px rgba(255, 255, 255, .1), 0 0 0 88px rgba(22, 119, 255, .045);
   }
 
   .final-photo {
