@@ -1,0 +1,11 @@
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
+  color: #10233f;
+  background: #dff3ff;
+  font-family: ui-rounded, system-ui, sans-serif;
+}

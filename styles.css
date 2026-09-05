@@ -1,3 +1,21 @@
+@font-face {
+  font-family: "M PLUS Rounded 1c Web";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("assets/m-plus-rounded-1c-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2460-24FF, U+25A0-25FF, U+2600-27BF;
+}
+
+@font-face {
+  font-family: "M PLUS Rounded 1c Web";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("assets/m-plus-rounded-1c-japanese-700-normal.woff2") format("woff2");
+  unicode-range: U+2E80-2EFF, U+2F00-2FDF, U+3040-30FF, U+31F0-31FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF;
+}
+
 :root {
   --ink: #10233f;
   --muted: #66758a;
@@ -12,8 +30,8 @@
   --line: rgba(16, 35, 63, 0.16);
   --shadow: 0 24px 70px rgba(41, 86, 127, 0.14);
   --radius: 28px;
-  --display: ui-rounded, "Arial Rounded MT Bold", "Trebuchet MS", "Microsoft YaHei", "PingFang SC", sans-serif;
-  --body: ui-rounded, "Trebuchet MS", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --display: "M PLUS Rounded 1c Web", "Arial Rounded MT Bold", ui-rounded, "MiSans", "HarmonyOS Sans SC", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  --body: "M PLUS Rounded 1c Web", "MiSans", "HarmonyOS Sans SC", "Microsoft YaHei UI", "PingFang SC", ui-rounded, system-ui, sans-serif;
 }
 
 * {
@@ -1397,6 +1415,32 @@ button {
   font-size: 9px;
 }
 
+.note-status {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.note-status p { font-weight: 800; letter-spacing: .04em; }
+
+.note-refresh {
+  min-height: 38px;
+  padding: 8px 17px;
+  color: #10233f;
+  font: 800 12px/1 var(--body);
+  cursor: pointer;
+  border: 1px solid rgba(16, 35, 63, .18);
+  background: rgba(255, 255, 255, .72);
+  border-radius: 999px;
+}
+
+.letter-form button:disabled {
+  cursor: wait;
+  opacity: .58;
+}
+
 .finale {
   position: relative;
   overflow: hidden;
@@ -1661,6 +1705,16 @@ button {
   text-shadow: 0 8px 42px rgba(7, 28, 54, .22);
 }
 
+.hero-v2 h1 > .hero-title-line {
+  display: block;
+  color: #fff;
+  font-size: inherit;
+}
+
+.hero-v2 h1 > .hero-title-line-last {
+  margin-top: .12em;
+}
+
 .group-card {
   grid-column: 1 / -1;
   min-height: 230px;
@@ -1681,7 +1735,7 @@ button {
   transform: translateY(-50%) rotate(2deg) scale(1.04);
 }
 
-.hero-v2 h1 > span {
+.hero-v2 h1 .hero-colon {
   display: inline;
   color: var(--lemon);
   font-size: inherit;
@@ -2299,6 +2353,8 @@ button {
     font-size: clamp(50px, 15vw, 66px);
     line-height: .86;
   }
+
+  .hero-v2 h1 > .hero-title-line-last { margin-top: .18em; }
 
   .hero-only-copy {
     max-width: 310px;

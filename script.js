@@ -1,5 +1,8 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
+const NOTES_API_URL = "https://tws-247-with-tws.tracyleeing.chatgpt.site/api/notes";
+const NOTES_REFRESH_MS = 30000;
+const notesPageLoadedAt = Date.now();
 
 const memberData = {
   shinyu: {
@@ -63,6 +66,7 @@ const moodSongs = {
 
 let manualTheme = null;
 let toastTimer;
+let sharedNotes = [];
 
 function updateTime() {
   const now = new Date();
@@ -179,25 +183,51 @@ function initMood() {
   });
 }
 
-function getNotes() {
-  try { const saved = JSON.parse(localStorage.getItem("tws42NotesV2") || "[]"); return Array.isArray(saved) ? saved : []; }
-  catch { return []; }
-}
+function renderNotes(notes = sharedNotes, state = "ready") {
+  const wall = $("#note-wall");
+  wall.replaceChildren();
+  wall.setAttribute("aria-busy", state === "loading" ? "true" : "false");
 
-function renderNotes() {
-  const wall = $("#note-wall"); wall.replaceChildren(); const saved = getNotes();
-  if (!saved.length) {
+  if (state === "loading") {
+    const loading = document.createElement("article"); loading.className = "note note-empty note-status";
+    loading.innerHTML = "<p>CONNECTING 42...</p><footer><span>— LIVE WALL</span><time>24 / 7</time></footer>";
+    wall.append(loading); return;
+  }
+
+  if (state === "error") {
+    const error = document.createElement("article"); error.className = "note note-empty note-status";
+    const message = document.createElement("p"); message.textContent = "留言墙暂时走神了，请稍后再试。";
+    const retry = document.createElement("button"); retry.className = "note-refresh"; retry.type = "button"; retry.textContent = "重新连接";
+    retry.addEventListener("click", () => refreshNotes()); error.append(message, retry); wall.append(error); return;
+  }
+
+  if (!notes.length) {
     const empty = document.createElement("article"); empty.className = "note note-empty";
     empty.innerHTML = "<p>42 / LEAVE YOUR MESSAGE HERE.</p><footer><span>— TWS</span><time>24 / 7</time></footer>";
     wall.append(empty); return;
   }
-  saved.slice(0, 12).forEach((note) => {
+  notes.slice(0, 12).forEach((note) => {
     const article = document.createElement("article"); article.className = "note";
     const message = document.createElement("p"); const footer = document.createElement("footer");
     const name = document.createElement("span"); const date = document.createElement("time");
     message.textContent = note.message; name.textContent = `— ${note.name}`; date.textContent = note.date;
     footer.append(name, date); article.append(message, footer); wall.append(article);
   });
+}
+
+async function refreshNotes({ silent = false } = {}) {
+  if (!silent && !sharedNotes.length) renderNotes([], "loading");
+  try {
+    const response = await fetch(`${NOTES_API_URL}?limit=24`, {
+      headers: { Accept: "application/json" }, cache: "no-store",
+    });
+    if (!response.ok) throw new Error("Unable to load notes");
+    const data = await response.json();
+    sharedNotes = Array.isArray(data.notes) ? data.notes : [];
+    renderNotes();
+  } catch {
+    if (!sharedNotes.length) renderNotes([], "error");
+  }
 }
 
 function showToast(message) {
@@ -208,15 +238,30 @@ function showToast(message) {
 function initLetters() {
   const form = $("#letter-form"); const textarea = $("#letter-message");
   textarea.addEventListener("input", () => { $("#letter-count").textContent = `${textarea.value.length} / 100`; });
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault(); const message = textarea.value.trim(); if (!message) return;
-    const name = $("#letter-name").value.trim() || "一位 42"; const saved = getNotes();
-    saved.unshift({ name: name.slice(0, 16), message: message.slice(0, 100), date: new Date().toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" }).replace("/", ".") });
-    try { localStorage.setItem("tws42NotesV2", JSON.stringify(saved.slice(0, 24))); }
-    catch { showToast("暂时无法保存这条留言"); }
-    form.reset(); $("#letter-count").textContent = "0 / 100"; renderNotes(); showToast("留言成功！✦");
+    const name = $("#letter-name").value.trim() || "一位 42";
+    const submit = form.querySelector("button[type='submit']");
+    submit.disabled = true;
+    try {
+      const response = await fetch(NOTES_API_URL, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.slice(0, 16), message: message.slice(0, 100), startedAt: notesPageLoadedAt }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "暂时无法贴上这条留言");
+      sharedNotes = [data.note, ...sharedNotes.filter((note) => note.id !== data.note.id)];
+      form.reset(); $("#letter-count").textContent = "0 / 100"; renderNotes(); showToast("留言成功，所有 42 都能看到啦！✦");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "暂时无法贴上这条留言");
+    } finally {
+      submit.disabled = false;
+    }
   });
-  renderNotes();
+  refreshNotes();
+  window.setInterval(() => refreshNotes({ silent: true }), NOTES_REFRESH_MS);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshNotes({ silent: true }); });
 }
 
 function initTilt() {
