@@ -1,21 +1,3 @@
-@font-face {
-  font-family: "M PLUS Rounded 1c Web";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 700;
-  src: url("assets/m-plus-rounded-1c-latin-700-normal.woff2") format("woff2");
-  unicode-range: U+0000-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2460-24FF, U+25A0-25FF, U+2600-27BF;
-}
-
-@font-face {
-  font-family: "M PLUS Rounded 1c Web";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 700;
-  src: url("assets/m-plus-rounded-1c-japanese-700-normal.woff2") format("woff2");
-  unicode-range: U+2E80-2EFF, U+2F00-2FDF, U+3040-30FF, U+31F0-31FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF;
-}
-
 :root {
   --ink: #10233f;
   --muted: #66758a;
@@ -30,8 +12,8 @@
   --line: rgba(16, 35, 63, 0.16);
   --shadow: 0 24px 70px rgba(41, 86, 127, 0.14);
   --radius: 28px;
-  --display: "M PLUS Rounded 1c Web", "Arial Rounded MT Bold", ui-rounded, "MiSans", "HarmonyOS Sans SC", "Microsoft YaHei UI", "PingFang SC", sans-serif;
-  --body: "M PLUS Rounded 1c Web", "MiSans", "HarmonyOS Sans SC", "Microsoft YaHei UI", "PingFang SC", ui-rounded, system-ui, sans-serif;
+  --display: "Helvetica Neue", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei UI", Arial, sans-serif;
+  --body: "Helvetica Neue", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei UI", Arial, sans-serif;
 }
 
 * {
@@ -48,7 +30,8 @@ body {
   color: var(--ink);
   background: var(--paper);
   font-family: var(--body);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: .018em;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -361,7 +344,7 @@ button {
 .hero h1 {
   max-width: 800px;
   margin: 0;
-  letter-spacing: -0.055em;
+  letter-spacing: .01em;
   font-family: var(--display);
   font-weight: 900;
   line-height: 0.86;
@@ -387,7 +370,7 @@ button {
   margin: 34px 0 0;
   letter-spacing: 0.03em;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .hero-actions {
@@ -449,7 +432,7 @@ button {
 }
 
 .hero-meta strong {
-  letter-spacing: -0.04em;
+  letter-spacing: .01em;
   font-size: 26px;
   line-height: 1;
 }
@@ -551,7 +534,7 @@ button {
 
 .section-heading h2 {
   margin: 0;
-  letter-spacing: -0.055em;
+  letter-spacing: .01em;
   font-family: var(--display);
   font-size: clamp(40px, 6vw, 76px);
   line-height: 1.04;
@@ -693,7 +676,7 @@ button {
 }
 
 .day-weather strong {
-  letter-spacing: -0.04em;
+  letter-spacing: .01em;
   font-size: clamp(24px, 3vw, 38px);
 }
 
@@ -874,7 +857,7 @@ button {
 }
 
 .member-info strong {
-  letter-spacing: -0.04em;
+  letter-spacing: .01em;
   font: 900 35px/1 var(--display);
 }
 
@@ -936,7 +919,7 @@ button {
   z-index: 2;
   left: 24px;
   bottom: 20px;
-  letter-spacing: -0.05em;
+  letter-spacing: .01em;
   font: 900 clamp(32px, 4.2vw, 55px)/0.84 var(--display);
   font-style: normal;
 }
@@ -954,7 +937,7 @@ button {
 
 .album-meta h3 {
   margin: 4px 0 6px;
-  letter-spacing: -0.03em;
+  letter-spacing: .01em;
   font-size: 24px;
 }
 
@@ -1062,7 +1045,7 @@ button {
 
 .mood-intro h2 {
   margin: 0;
-  letter-spacing: -0.055em;
+  letter-spacing: .01em;
   font: 900 clamp(42px, 5.5vw, 72px)/1.05 var(--display);
 }
 
@@ -1174,7 +1157,7 @@ button {
 
 .song-copy h3 {
   margin: 3px 0 0;
-  letter-spacing: -0.055em;
+  letter-spacing: .01em;
   font: 900 clamp(44px, 6vw, 74px)/1 var(--display);
 }
 
@@ -1267,7 +1250,7 @@ button {
 
 .timeline-item h3 {
   margin: 0 0 10px;
-  letter-spacing: -0.03em;
+  letter-spacing: .01em;
   font-size: 18px;
 }
 
@@ -1301,7 +1284,7 @@ button {
 
 .letters-intro h2 {
   margin: 0;
-  letter-spacing: -.055em;
+  letter-spacing: .01em;
   font: 900 clamp(42px, 5.5vw, 70px)/1.06 var(--display);
 }
 
@@ -1462,7 +1445,7 @@ button {
 
 .finale-inner { position: relative; z-index: 2; }
 .finale p { margin: 0 0 16px; letter-spacing: .18em; font-size: 10px; font-weight: 800; }
-.finale h2 { margin: 0 0 46px; letter-spacing: -.06em; font: 900 clamp(64px, 10vw, 140px)/.87 var(--display); }
+.finale h2 { margin: 0 0 46px; letter-spacing: .01em; font: 900 clamp(64px, 10vw, 140px)/.87 var(--display); }
 .finale h2 i { color: var(--lemon); font-style: normal; }
 .button-light { color: #10233f; background: white; }
 
@@ -1526,7 +1509,7 @@ button {
 .dialog-monogram { display: grid; place-items: center; overflow: hidden; color: rgba(255,255,255,.66); background: var(--dialog-color, #9ee2ce); font: 900 190px/1 var(--display); }
 .dialog-copy { display: flex; flex-direction: column; justify-content: center; padding: 70px 58px 58px; background: #fffdf7; }
 .dialog-copy > span { color: var(--blue); letter-spacing: .12em; font-size: 9px; font-weight: 900; }
-.dialog-copy h2 { margin: 3px 0 0; letter-spacing: -.05em; font: 900 clamp(48px, 7vw, 78px)/1 var(--display); }
+.dialog-copy h2 { margin: 3px 0 0; letter-spacing: .01em; font: 900 clamp(48px, 7vw, 78px)/1 var(--display); }
 .dialog-korean { margin: 2px 0 24px; color: #748094; font-size: 13px; }
 .dialog-copy > p:not(.dialog-korean) { color: #59687b; font-size: 14px; }
 .dialog-copy blockquote { margin: 20px 0 32px; padding-left: 16px; color: #10233f; border-left: 3px solid var(--dialog-color, #9ee2ce); font-size: 16px; font-weight: 700; }
@@ -1700,7 +1683,7 @@ button {
   max-width: 730px;
   margin: 0;
   color: #fff;
-  letter-spacing: -.03em;
+  letter-spacing: .01em;
   font: 900 clamp(78px, 10.7vw, 152px)/.79 var(--display);
   text-shadow: 0 8px 42px rgba(7, 28, 54, .22);
 }
@@ -1918,9 +1901,9 @@ button {
 .fan-symbol::after { position: absolute; content: "42"; color: rgba(255,255,255,.45); font: 900 180px/1 var(--display); transform: rotate(-12deg); }
 .fan-symbol > * { position: relative; z-index: 2; }
 .fan-symbol span, .fan-symbol small, .fan-copy > span { letter-spacing: .14em; font-size: 8px; font-weight: 850; }
-.fan-symbol strong { margin: 5px 0; letter-spacing: -.08em; font: 900 80px/1 var(--display); }
+.fan-symbol strong { margin: 5px 0; letter-spacing: .01em; font: 900 80px/1 var(--display); }
 .fan-copy > span { color: var(--blue); }
-.fan-copy h3 { margin: 8px 0 15px; letter-spacing: -.045em; font: 900 clamp(38px, 5vw, 64px)/1 var(--display); }
+.fan-copy h3 { margin: 8px 0 15px; letter-spacing: .01em; font: 900 clamp(38px, 5vw, 64px)/1 var(--display); }
 .fan-copy p { max-width: 580px; margin: 0; color: #5e6d80; font-size: 14px; line-height: 1.9; }
 
 .music-v2 .album-track { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -2076,7 +2059,7 @@ button {
 .finale-v2 h2 {
   margin: 18px 0 14px;
   color: #10233f;
-  letter-spacing: -.025em;
+  letter-spacing: .01em;
   font-size: clamp(76px, 10vw, 128px);
   line-height: .83;
 }
@@ -2273,7 +2256,7 @@ button {
     height: auto;
     color: var(--blue);
     background: none;
-    letter-spacing: -.02em;
+    letter-spacing: .01em;
     font: 800 9px/1.1 var(--body);
     transform: none;
   }
@@ -2416,7 +2399,7 @@ button {
   .section-heading h2,
   .mood-intro h2,
   .letters-intro h2 {
-    letter-spacing: -.045em;
+    letter-spacing: .01em;
     font-size: clamp(36px, 11.5vw, 48px);
     line-height: 1.02;
   }
