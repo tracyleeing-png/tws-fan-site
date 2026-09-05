@@ -1,8 +1,10 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-const NOTES_API_URL = "https://tws-247-with-tws.tracyleeing.chatgpt.site/api/notes";
-const NOTES_REFRESH_MS = 30000;
-const notesPageLoadedAt = Date.now();
+const GITHUB_WALL_API_URL = "https://api.github.com/repos/tracyleeing-png/tws-fan-site/issues?state=open&sort=created&direction=desc&per_page=100";
+const GITHUB_WALL_NEW_URL = "https://github.com/tracyleeing-png/tws-fan-site/issues/new";
+const GITHUB_WALL_TITLE = "[42留言]";
+const GITHUB_WALL_MARKER = "<!-- tws-42-wall -->";
+const NOTES_REFRESH_MS = 300000;
 
 const memberData = {
   shinyu: {
@@ -67,6 +69,12 @@ const moodSongs = {
 let manualTheme = null;
 let toastTimer;
 let sharedNotes = [];
+
+function fetchWithTimeout(url, options = {}, timeout = 6500) {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), timeout);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => window.clearTimeout(timer));
+}
 
 function updateTime() {
   const now = new Date();
@@ -196,8 +204,8 @@ function renderNotes(notes = sharedNotes, state = "ready") {
 
   if (state === "error") {
     const error = document.createElement("article"); error.className = "note note-empty note-status";
-    const message = document.createElement("p"); message.textContent = "留言墙暂时走神了，请稍后再试。";
-    const retry = document.createElement("button"); retry.className = "note-refresh"; retry.type = "button"; retry.textContent = "重新连接";
+    const message = document.createElement("p"); message.textContent = "暂时无法同步留言。";
+    const retry = document.createElement("button"); retry.className = "note-refresh"; retry.type = "button"; retry.textContent = "再试一次";
     retry.addEventListener("click", () => refreshNotes()); error.append(message, retry); wall.append(error); return;
   }
 
@@ -215,16 +223,44 @@ function renderNotes(notes = sharedNotes, state = "ready") {
   });
 }
 
+function formatGithubDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "24 / 7";
+  return new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" }).format(date).replace("/", ".");
+}
+
+async function loadGithubNotes() {
+  const response = await fetchWithTimeout(GITHUB_WALL_API_URL, {
+    headers: { Accept: "application/vnd.github+json" }, cache: "no-store",
+  }, 8000);
+  if (!response.ok) throw new Error("Unable to load GitHub wall");
+  const issues = await response.json();
+  if (!Array.isArray(issues)) return [];
+  return issues
+    .filter((issue) => !issue.pull_request && (
+      String(issue.title || "").startsWith(GITHUB_WALL_TITLE) || String(issue.body || "").includes(GITHUB_WALL_MARKER)
+    ))
+    .map((issue) => ({
+      id: `github-${issue.id}`,
+      name: String(issue.title || "").slice(GITHUB_WALL_TITLE.length).trim().slice(0, 16) || "一位 42",
+      message: String(issue.body || "").replace(GITHUB_WALL_MARKER, "").trim().slice(0, 100),
+      date: formatGithubDate(issue.created_at),
+    }))
+    .filter((note) => note.message);
+}
+
+function githubDraftUrl(name, message) {
+  const params = new URLSearchParams({
+    title: `${GITHUB_WALL_TITLE} ${name}`,
+    body: `${GITHUB_WALL_MARKER}\n${message}`,
+  });
+  return `${GITHUB_WALL_NEW_URL}?${params.toString()}`;
+}
+
 async function refreshNotes({ silent = false } = {}) {
   if (!silent && !sharedNotes.length) renderNotes([], "loading");
   try {
-    const response = await fetch(`${NOTES_API_URL}?limit=24`, {
-      headers: { Accept: "application/json" }, cache: "no-store",
-    });
-    if (!response.ok) throw new Error("Unable to load notes");
-    const data = await response.json();
-    sharedNotes = Array.isArray(data.notes) ? data.notes : [];
-    renderNotes();
+    sharedNotes = await loadGithubNotes(); renderNotes();
   } catch {
     if (!sharedNotes.length) renderNotes([], "error");
   }
@@ -238,26 +274,13 @@ function showToast(message) {
 function initLetters() {
   const form = $("#letter-form"); const textarea = $("#letter-message");
   textarea.addEventListener("input", () => { $("#letter-count").textContent = `${textarea.value.length} / 100`; });
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault(); const message = textarea.value.trim(); if (!message) return;
     const name = $("#letter-name").value.trim() || "一位 42";
-    const submit = form.querySelector("button[type='submit']");
-    submit.disabled = true;
-    try {
-      const response = await fetch(NOTES_API_URL, {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.slice(0, 16), message: message.slice(0, 100), startedAt: notesPageLoadedAt }),
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || "暂时无法贴上这条留言");
-      sharedNotes = [data.note, ...sharedNotes.filter((note) => note.id !== data.note.id)];
-      form.reset(); $("#letter-count").textContent = "0 / 100"; renderNotes(); showToast("留言成功，所有 42 都能看到啦！✦");
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : "暂时无法贴上这条留言");
-    } finally {
-      submit.disabled = false;
-    }
+    const draftUrl = githubDraftUrl(name.slice(0, 16), message.slice(0, 100));
+    const opened = window.open(draftUrl, "_blank");
+    if (opened) opened.opener = null; else window.location.href = draftUrl;
+    showToast("请在 GitHub 页面确认发布，返回后大家就能看到啦！");
   });
   refreshNotes();
   window.setInterval(() => refreshNotes({ silent: true }), NOTES_REFRESH_MS);
