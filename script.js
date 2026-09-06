@@ -1,10 +1,10 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-const GITHUB_WALL_API_URL = "https://api.github.com/repos/tracyleeing-png/tws-fan-site/issues?state=open&sort=created&direction=desc&per_page=100";
-const GITHUB_WALL_NEW_URL = "https://github.com/tracyleeing-png/tws-fan-site/issues/new";
-const GITHUB_WALL_TITLE = "[42留言]";
-const GITHUB_WALL_MARKER = "<!-- tws-42-wall -->";
-const NOTES_REFRESH_MS = 300000;
+const CLOUDBASE_ENV_ID = "tws0122-d1gmao1jw1ea51891";
+const NOTES_TABLE = "tws_notes";
+const NOTES_REFRESH_MS = 60000;
+const NOTES_COOLDOWN_MS = 15000;
+const NOTES_COOLDOWN_KEY = "tws-42-last-note-at";
 
 const memberData = {
   shinyu: {
@@ -69,12 +69,7 @@ const moodSongs = {
 let manualTheme = null;
 let toastTimer;
 let sharedNotes = [];
-
-function fetchWithTimeout(url, options = {}, timeout = 6500) {
-  const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), timeout);
-  return fetch(url, { ...options, signal: controller.signal }).finally(() => window.clearTimeout(timer));
-}
+let cloudbaseDbPromise;
 
 function updateTime() {
   const now = new Date();
@@ -214,7 +209,7 @@ function renderNotes(notes = sharedNotes, state = "ready") {
     empty.innerHTML = "<p>42 / LEAVE YOUR MESSAGE HERE.</p><footer><span>— TWS</span><time>24 / 7</time></footer>";
     wall.append(empty); return;
   }
-  notes.slice(0, 12).forEach((note) => {
+  notes.slice(0, 42).forEach((note) => {
     const article = document.createElement("article"); article.className = "note";
     const message = document.createElement("p"); const footer = document.createElement("footer");
     const name = document.createElement("span"); const date = document.createElement("time");
@@ -223,45 +218,82 @@ function renderNotes(notes = sharedNotes, state = "ready") {
   });
 }
 
-function formatGithubDate(value) {
+function formatNoteDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "24 / 7";
   return new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" }).format(date).replace("/", ".");
 }
 
-async function loadGithubNotes() {
-  const response = await fetchWithTimeout(GITHUB_WALL_API_URL, {
-    headers: { Accept: "application/vnd.github+json" }, cache: "no-store",
-  }, 8000);
-  if (!response.ok) throw new Error("Unable to load GitHub wall");
-  const issues = await response.json();
-  if (!Array.isArray(issues)) return [];
-  return issues
-    .filter((issue) => !issue.pull_request && (
-      String(issue.title || "").startsWith(GITHUB_WALL_TITLE) || String(issue.body || "").includes(GITHUB_WALL_MARKER)
-    ))
-    .map((issue) => ({
-      id: `github-${issue.id}`,
-      name: String(issue.title || "").slice(GITHUB_WALL_TITLE.length).trim().slice(0, 16) || "一位 42",
-      message: String(issue.body || "").replace(GITHUB_WALL_MARKER, "").trim().slice(0, 100),
-      date: formatGithubDate(issue.created_at),
-    }))
-    .filter((note) => note.message);
+function resultError(result, fallbackMessage) {
+  if (!result?.error) return null;
+  if (result.error instanceof Error) return result.error;
+  return new Error(result.error.message || result.error.msg || fallbackMessage);
 }
 
-function githubDraftUrl(name, message) {
-  const params = new URLSearchParams({
-    title: `${GITHUB_WALL_TITLE} ${name}`,
-    body: `${GITHUB_WALL_MARKER}\n${message}`,
-  });
-  return `${GITHUB_WALL_NEW_URL}?${params.toString()}`;
+async function getCloudbaseDb() {
+  if (!cloudbaseDbPromise) {
+    cloudbaseDbPromise = (async () => {
+      if (!window.cloudbase?.init) throw new Error("CloudBase SDK unavailable");
+      const app = window.cloudbase.init({ env: CLOUDBASE_ENV_ID, region: "ap-shanghai" });
+      const auth = typeof app.auth === "function" ? app.auth() : app.auth;
+      if (!auth) throw new Error("CloudBase Auth unavailable");
+
+      let hasSession = false;
+      if (typeof auth.getSession === "function") {
+        const sessionResult = await auth.getSession();
+        const sessionError = resultError(sessionResult, "Unable to restore anonymous session");
+        if (sessionError) throw sessionError;
+        hasSession = Boolean(sessionResult?.data?.session || sessionResult?.session);
+      }
+
+      if (!hasSession) {
+        if (typeof auth.signInAnonymously === "function") {
+          const loginResult = await auth.signInAnonymously();
+          const loginError = resultError(loginResult, "Unable to sign in anonymously");
+          if (loginError) throw loginError;
+        } else if (typeof auth.anonymousAuthProvider === "function") {
+          await auth.anonymousAuthProvider().signIn();
+        } else {
+          throw new Error("Anonymous sign-in unavailable");
+        }
+      }
+
+      const db = app.rdb();
+      if (!db) throw new Error("CloudBase database unavailable");
+      return db;
+    })().catch((error) => {
+      cloudbaseDbPromise = null;
+      throw error;
+    });
+  }
+  return cloudbaseDbPromise;
+}
+
+async function loadCloudbaseNotes() {
+  const db = await getCloudbaseDb();
+  const result = await db
+    .from(NOTES_TABLE)
+    .select("id,name,message,created_at")
+    .order("created_at", { ascending: false })
+    .limit(42);
+  const error = resultError(result, "Unable to load message wall");
+  if (error) throw error;
+  return (Array.isArray(result.data) ? result.data : [])
+    .map((note) => ({
+      id: `cloudbase-${note.id}`,
+      name: String(note.name || "").trim().slice(0, 16) || "一位 42",
+      message: String(note.message || "").trim().slice(0, 100),
+      date: formatNoteDate(note.created_at),
+    }))
+    .filter((note) => note.message);
 }
 
 async function refreshNotes({ silent = false } = {}) {
   if (!silent && !sharedNotes.length) renderNotes([], "loading");
   try {
-    sharedNotes = await loadGithubNotes(); renderNotes();
-  } catch {
+    sharedNotes = await loadCloudbaseNotes(); renderNotes();
+  } catch (error) {
+    console.error("Unable to refresh the 42 wall", error);
     if (!sharedNotes.length) renderNotes([], "error");
   }
 }
@@ -274,13 +306,37 @@ function showToast(message) {
 function initLetters() {
   const form = $("#letter-form"); const textarea = $("#letter-message");
   textarea.addEventListener("input", () => { $("#letter-count").textContent = `${textarea.value.length} / 100`; });
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault(); const message = textarea.value.trim(); if (!message) return;
-    const name = $("#letter-name").value.trim() || "一位 42";
-    const draftUrl = githubDraftUrl(name.slice(0, 16), message.slice(0, 100));
-    const opened = window.open(draftUrl, "_blank");
-    if (opened) opened.opener = null; else window.location.href = draftUrl;
-    showToast("请在 GitHub 页面确认发布，返回后大家就能看到啦！");
+    const name = ($("#letter-name").value.trim() || "一位 42").slice(0, 16);
+    const submitButton = $("button[type='submit']", form);
+    let lastPostedAt = 0;
+    try { lastPostedAt = Number(localStorage.getItem(NOTES_COOLDOWN_KEY) || 0); } catch { /* private mode */ }
+    if (Date.now() - lastPostedAt < NOTES_COOLDOWN_MS) {
+      showToast("先等一小会儿，再贴下一张纸条吧。"); return;
+    }
+
+    const originalButton = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.textContent = "正在贴上…";
+    try {
+      const db = await getCloudbaseDb();
+      const result = await db.from(NOTES_TABLE).insert({ name, message: message.slice(0, 100) });
+      const error = resultError(result, "Unable to post message");
+      if (error) throw error;
+      try { localStorage.setItem(NOTES_COOLDOWN_KEY, String(Date.now())); } catch { /* private mode */ }
+      form.reset();
+      $("#letter-count").textContent = "0 / 100";
+      showToast("留言贴好啦，所有 42 都能看到！");
+      await refreshNotes({ silent: true });
+    } catch (error) {
+      console.error("Unable to post to the 42 wall", error);
+      const detail = String(error?.message || error).toLowerCase();
+      showToast(detail.includes("please wait") ? "先等 15 秒，再贴下一张纸条吧。" : "暂时没贴成功，请稍后再试。");
+    } finally {
+      submitButton.disabled = false;
+      submitButton.innerHTML = originalButton;
+    }
   });
   refreshNotes();
   window.setInterval(() => refreshNotes({ silent: true }), NOTES_REFRESH_MS);
