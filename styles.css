@@ -2273,11 +2273,11 @@ button {
     transform: none;
   }
 
-  .nav-links a:nth-child(1)::before { content: "00:00"; }
-  .nav-links a:nth-child(2)::before { content: "07:00"; }
-  .nav-links a:nth-child(3)::before { content: "12:00"; }
+  .nav-links a:nth-child(1)::before { content: "00:42"; }
+  .nav-links a:nth-child(2)::before { content: "07:42"; }
+  .nav-links a:nth-child(3)::before { content: "12:42"; }
   .nav-links a:nth-child(4)::before { content: "15:42"; }
-  .nav-links a:nth-child(5)::before { content: "18:00"; }
+  .nav-links a:nth-child(5)::before { content: "18:42"; }
   .nav-links a:nth-child(6)::before { content: "23:42"; }
   .nav-links a:nth-child(1)::after { content: "HOME"; }
   .nav-links a:nth-child(2)::after { content: "MEMBER"; }
