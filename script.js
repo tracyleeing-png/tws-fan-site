@@ -238,24 +238,14 @@ async function getCloudbaseDb() {
       const auth = typeof app.auth === "function" ? app.auth() : app.auth;
       if (!auth) throw new Error("CloudBase Auth unavailable");
 
-      let hasSession = false;
-      if (typeof auth.getSession === "function") {
-        const sessionResult = await auth.getSession();
-        const sessionError = resultError(sessionResult, "Unable to restore anonymous session");
-        if (sessionError) throw sessionError;
-        hasSession = Boolean(sessionResult?.data?.session || sessionResult?.session);
-      }
-
-      if (!hasSession) {
-        if (typeof auth.signInAnonymously === "function") {
-          const loginResult = await auth.signInAnonymously();
-          const loginError = resultError(loginResult, "Unable to sign in anonymously");
-          if (loginError) throw loginError;
-        } else if (typeof auth.anonymousAuthProvider === "function") {
-          await auth.anonymousAuthProvider().signIn();
-        } else {
-          throw new Error("Anonymous sign-in unavailable");
-        }
+      if (typeof auth.signInAnonymously === "function") {
+        const loginResult = await auth.signInAnonymously();
+        const loginError = resultError(loginResult, "Unable to sign in anonymously");
+        if (loginError) throw loginError;
+      } else if (typeof auth.anonymousAuthProvider === "function") {
+        await auth.anonymousAuthProvider().signIn();
+      } else {
+        throw new Error("Anonymous sign-in unavailable");
       }
 
       const db = app.rdb();
