@@ -994,15 +994,6 @@ button {
   font: 300 160px/1 var(--display);
 }
 
-.album-arrow {
-  position: absolute;
-  top: 4%;
-  right: 12%;
-  color: rgba(255,255,255,.7);
-  font: 300 150px/1 var(--display);
-  transform: rotate(-5deg);
-}
-
 .album-grid {
   position: absolute;
   inset: 20%;
@@ -1285,7 +1276,7 @@ button {
 .letters-intro h2 {
   margin: 0;
   letter-spacing: .01em;
-  font: 900 clamp(42px, 5.5vw, 70px)/1.06 var(--display);
+  font: 900 clamp(39px, 5.1vw, 64px)/1.08 var(--display);
 }
 
 .letters-intro > p:not(.kicker) {
@@ -2404,6 +2395,11 @@ button {
     line-height: 1.02;
   }
 
+  .letters-intro h2 {
+    font-size: clamp(32px, 10vw, 43px);
+    line-height: 1.08;
+  }
+
   .section-heading-row > p {
     max-width: 270px;
     margin: 0;
@@ -2493,7 +2489,6 @@ button {
   .album-orbit,
   .album-ball { width: 37%; }
   .album-bell { font-size: 90px; }
-  .album-arrow { font-size: 82px; }
   .album-spark,
   .album-sun { font-size: 62px; }
   .album-loop { font-size: 72px; }

@@ -33,7 +33,7 @@ const memberData = {
   },
   hanjin: {
     index: "04", monogram: "H", name: "HANJIN", korean: "韩振 · 한진", date: "2006.01.05", color: "#ffb6a4",
-    url: "https://zh.wikipedia.org/wiki/%E9%9F%93%E6%8C%AF",
+    url: "https://twous.fandom.com/wiki/HANJIN",
     facts: [
       ["本名", "韩振 · 한진"], ["生日", "2006.01.05 · 摩羯座"], ["身高", "178 cm"],
       ["MBTI", "INFJ"], ["学校", "河南师大附中国际部日韩班"], ["出生地", "河南省新乡市"],
