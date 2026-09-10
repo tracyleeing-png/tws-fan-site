@@ -1,7 +1,7 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const NOTES_API_URL = "https://tws-247-with-tws.tracyleeing.chatgpt.site/api/notes";
-const NOTES_REFRESH_MS = 60000;
+const NOTES_REFRESH_MS = 5000;
 const NOTES_COOLDOWN_MS = 15000;
 const NOTES_COOLDOWN_KEY = "tws-42-last-note-at";
 const NOTES_OWNER_KEY = "tws-42-note-owner-token-v1";
@@ -255,7 +255,14 @@ async function requestNotesApi(path = "", options = {}) {
   headers.set("Accept", "application/json");
   headers.set("X-Note-Owner-Token", getNoteOwnerToken());
   if (options.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
-  const response = await fetch(`${NOTES_API_URL}${path}`, { ...options, headers, mode: "cors" });
+  const method = String(options.method || "GET").toUpperCase();
+  const cacheBuster = method === "GET" ? `${path.includes("?") ? "&" : "?"}_=${Date.now()}` : "";
+  const response = await fetch(`${NOTES_API_URL}${path}${cacheBuster}`, {
+    ...options,
+    headers,
+    mode: "cors",
+    cache: "no-store",
+  });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || "留言墙暂时无法连接");
   return data;
@@ -334,8 +341,10 @@ function initLetters() {
     }
   });
   refreshNotes();
-  window.setInterval(() => refreshNotes({ silent: true }), NOTES_REFRESH_MS);
+  window.setInterval(() => { if (!document.hidden) refreshNotes({ silent: true }); }, NOTES_REFRESH_MS);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshNotes({ silent: true }); });
+  window.addEventListener("focus", () => refreshNotes({ silent: true }));
+  window.addEventListener("online", () => refreshNotes({ silent: true }));
 }
 
 function initTilt() {
