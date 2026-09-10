@@ -39,6 +39,14 @@ export async function createPublicNote(note: PublicNote & { visitorHash: string;
     .run();
 }
 
+export async function listOwnedNoteIds(ownerHash: string, limit = 100) {
+  const result = await getDatabase()
+    .prepare("SELECT id FROM notes WHERE owner_hash = ? ORDER BY created_at DESC LIMIT ?")
+    .bind(ownerHash, limit)
+    .all<{ id: string }>();
+  return result.results.map((row) => row.id);
+}
+
 export async function deleteOwnedNote(id: string, ownerHash: string) {
   const result = await getDatabase()
     .prepare("DELETE FROM notes WHERE id = ? AND owner_hash = ?")

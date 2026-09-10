@@ -4,6 +4,7 @@ import {
   createPublicNote,
   deleteNoteById,
   deleteOwnedNote,
+  listOwnedNoteIds,
   listPublicNotes,
   type PublicNote,
   type StoredNote,
@@ -89,13 +90,13 @@ function constantTimeEqual(left: string, right: string) {
   return difference === 0;
 }
 
-function readOwnerToken(request: Request) {
-  const token = request.headers.get("X-Note-Owner-Token") || "";
+function readOwnerToken(request: Request, suppliedToken?: unknown) {
+  const token = typeof suppliedToken === "string" ? suppliedToken : request.headers.get("X-Note-Owner-Token") || "";
   return /^[A-Za-z0-9_-]{32,128}$/.test(token) ? token : "";
 }
 
-async function getOwnerHash(request: Request) {
-  const token = readOwnerToken(request);
+async function getOwnerHash(request: Request, suppliedToken?: unknown) {
+  const token = readOwnerToken(request, suppliedToken);
   if (!token) return null;
   if (!env.NOTE_OWNER_SALT) throw new Error("Owner salt is unavailable");
   return sha256(`${env.NOTE_OWNER_SALT}:${token}`);
@@ -141,19 +142,34 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   if (!isAllowedBrowserRequest(request)) return json(request, { error: "无法确认留言来源" }, 403);
-  if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) {
+  const contentType = request.headers.get("Content-Type")?.toLowerCase() || "";
+  if (!contentType.startsWith("application/json") && !contentType.startsWith("text/plain")) {
     return json(request, { error: "留言格式不正确" }, 415);
   }
   const contentLength = Number(request.headers.get("Content-Length") || "0");
   if (contentLength > 2048) return json(request, { error: "留言内容太长啦" }, 413);
 
   try {
-    const body = (await request.json()) as { name?: unknown; message?: unknown; startedAt?: unknown };
+    const body = (await request.json()) as { name?: unknown; message?: unknown; startedAt?: unknown; ownerToken?: unknown };
+    const action = new URL(request.url).searchParams.get("action");
+    const ownerHash = await getOwnerHash(request, body.ownerToken);
+    if (!ownerHash) return json(request, { error: "无法生成这条留言的删除凭证" }, 400);
+
+    if (action === "ownership") {
+      return json(request, { ownedIds: await listOwnedNoteIds(ownerHash) });
+    }
+
+    if (action === "delete") {
+      const id = cleanId(new URL(request.url).searchParams.get("id"));
+      if (!id) return json(request, { error: "留言编号无效" }, 400);
+      const deleted = await deleteOwnedNote(id, ownerHash);
+      if (!deleted) return json(request, { error: "只能删除自己在当前设备发送的留言" }, 404);
+      return json(request, { deleted: true });
+    }
+
     const name = cleanName(body.name) || "一位 42";
     const message = cleanMessage(body.message);
     const startedAt = typeof body.startedAt === "number" ? body.startedAt : 0;
-    const ownerHash = await getOwnerHash(request);
-    if (!ownerHash) return json(request, { error: "无法生成这条留言的删除凭证" }, 400);
     if (!message) return json(request, { error: "先写下一句话吧" }, 400);
     if (Date.now() - startedAt < 1200) return json(request, { error: "慢一点，再确认一下留言吧" }, 400);
 

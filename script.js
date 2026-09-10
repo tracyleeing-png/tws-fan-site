@@ -231,7 +231,11 @@ function renderNotes(notes = sharedNotes, state = "ready") {
 
 function createNoteOwnerToken() {
   const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    for (let index = 0; index < bytes.length; index += 1) bytes[index] = Math.floor(Math.random() * 256);
+  }
   const binary = Array.from(bytes, (value) => String.fromCharCode(value)).join("");
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
@@ -253,8 +257,7 @@ function getNoteOwnerToken() {
 async function requestNotesApi(path = "", options = {}) {
   const headers = new Headers(options.headers || {});
   headers.set("Accept", "application/json");
-  headers.set("X-Note-Owner-Token", getNoteOwnerToken());
-  if (options.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+  if (options.body && !headers.has("Content-Type")) headers.set("Content-Type", "text/plain;charset=UTF-8");
   const method = String(options.method || "GET").toUpperCase();
   const cacheBuster = method === "GET" ? `${path.includes("?") ? "&" : "?"}_=${Date.now()}` : "";
   const response = await fetch(`${NOTES_API_URL}${path}${cacheBuster}`, {
@@ -270,7 +273,18 @@ async function requestNotesApi(path = "", options = {}) {
 
 async function loadSharedNotes() {
   const data = await requestNotesApi("?limit=42");
-  return Array.isArray(data.notes) ? data.notes : [];
+  const notes = Array.isArray(data.notes) ? data.notes : [];
+  try {
+    const ownership = await requestNotesApi("?action=ownership", {
+      method: "POST",
+      body: JSON.stringify({ ownerToken: getNoteOwnerToken() }),
+    });
+    const ownedIds = new Set(Array.isArray(ownership.ownedIds) ? ownership.ownedIds : []);
+    notes.forEach((note) => { note.canDelete = ownedIds.has(note.id); });
+  } catch (error) {
+    console.warn("Unable to refresh message ownership", error);
+  }
+  return notes;
 }
 
 async function deleteOwnNote(id, button) {
@@ -278,7 +292,10 @@ async function deleteOwnNote(id, button) {
   button.disabled = true;
   button.textContent = "删除中…";
   try {
-    await requestNotesApi(`?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    await requestNotesApi(`?action=delete&id=${encodeURIComponent(id)}`, {
+      method: "POST",
+      body: JSON.stringify({ ownerToken: getNoteOwnerToken() }),
+    });
     sharedNotes = sharedNotes.filter((note) => note.id !== id);
     renderNotes();
     showToast("这条留言已经删除。");
@@ -324,7 +341,7 @@ function initLetters() {
     try {
       await requestNotesApi("", {
         method: "POST",
-        body: JSON.stringify({ name, message: message.slice(0, 100), startedAt: letterStartedAt }),
+        body: JSON.stringify({ name, message: message.slice(0, 100), startedAt: letterStartedAt, ownerToken: getNoteOwnerToken() }),
       });
       try { localStorage.setItem(NOTES_COOLDOWN_KEY, String(Date.now())); } catch { /* private mode */ }
       form.reset();
