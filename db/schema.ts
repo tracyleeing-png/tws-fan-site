@@ -7,10 +7,12 @@ export const notes = sqliteTable(
     name: text("name").notNull(),
     message: text("message").notNull(),
     visitorHash: text("visitor_hash").notNull(),
+    ownerHash: text("owner_hash"),
     createdAt: integer("created_at").notNull(),
   },
   (table) => [
     index("idx_notes_created_at").on(table.createdAt),
     index("idx_notes_visitor_created_at").on(table.visitorHash, table.createdAt),
+    index("idx_notes_owner_hash").on(table.ownerHash),
   ],
 );

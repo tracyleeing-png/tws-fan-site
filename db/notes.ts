@@ -7,6 +7,10 @@ export type PublicNote = {
   createdAt: number;
 };
 
+export type StoredNote = PublicNote & {
+  ownerHash: string | null;
+};
+
 function getDatabase() {
   if (!env.DB) throw new Error("D1 binding DB is unavailable");
   return env.DB;
@@ -14,9 +18,9 @@ function getDatabase() {
 
 export async function listPublicNotes(limit: number) {
   const result = await getDatabase()
-    .prepare("SELECT id, name, message, created_at AS createdAt FROM notes ORDER BY created_at DESC LIMIT ?")
+    .prepare("SELECT id, name, message, owner_hash AS ownerHash, created_at AS createdAt FROM notes ORDER BY created_at DESC LIMIT ?")
     .bind(limit)
-    .all<PublicNote>();
+    .all<StoredNote>();
   return result.results;
 }
 
@@ -28,9 +32,25 @@ export async function countRecentNotes(visitorHash: string, since: number) {
   return Number(row?.total ?? 0);
 }
 
-export async function createPublicNote(note: PublicNote & { visitorHash: string }) {
+export async function createPublicNote(note: PublicNote & { visitorHash: string; ownerHash: string }) {
   await getDatabase()
-    .prepare("INSERT INTO notes (id, name, message, visitor_hash, created_at) VALUES (?, ?, ?, ?, ?)")
-    .bind(note.id, note.name, note.message, note.visitorHash, note.createdAt)
+    .prepare("INSERT INTO notes (id, name, message, visitor_hash, owner_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)")
+    .bind(note.id, note.name, note.message, note.visitorHash, note.ownerHash, note.createdAt)
     .run();
+}
+
+export async function deleteOwnedNote(id: string, ownerHash: string) {
+  const result = await getDatabase()
+    .prepare("DELETE FROM notes WHERE id = ? AND owner_hash = ?")
+    .bind(id, ownerHash)
+    .run();
+  return Number(result.meta.changes || 0) > 0;
+}
+
+export async function deleteNoteById(id: string) {
+  const result = await getDatabase()
+    .prepare("DELETE FROM notes WHERE id = ?")
+    .bind(id)
+    .run();
+  return Number(result.meta.changes || 0) > 0;
 }

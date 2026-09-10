@@ -1,10 +1,10 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-const CLOUDBASE_ENV_ID = "tws0122-d1gmao1jw1ea51891";
-const NOTES_TABLE = "tws_notes";
+const NOTES_API_URL = "https://tws-247-with-tws.tracyleeing.chatgpt.site/api/notes";
 const NOTES_REFRESH_MS = 60000;
 const NOTES_COOLDOWN_MS = 15000;
 const NOTES_COOLDOWN_KEY = "tws-42-last-note-at";
+const NOTES_OWNER_KEY = "tws-42-note-owner-token-v1";
 
 const memberData = {
   shinyu: {
@@ -33,7 +33,7 @@ const memberData = {
   },
   hanjin: {
     index: "04", monogram: "H", name: "HANJIN", korean: "韩振 · 한진", date: "2006.01.05", color: "#ffb6a4",
-    url: "https://twous.fandom.com/wiki/HANJIN",
+    url: "https://zh.wikipedia.org/w/index.php?title=%E9%9F%93%E6%8C%AF&oldid=93822190",
     facts: [
       ["本名", "韩振 · 한진"], ["生日", "2006.01.05 · 摩羯座"], ["身高", "178 cm"],
       ["MBTI", "INFJ"], ["学校", "河南师大附中国际部日韩班"], ["出生地", "河南省新乡市"],
@@ -69,7 +69,8 @@ const moodSongs = {
 let manualTheme = null;
 let toastTimer;
 let sharedNotes = [];
-let cloudbaseDbPromise;
+let noteOwnerToken;
+let letterStartedAt = Date.now();
 
 function updateTime() {
   const now = new Date();
@@ -214,74 +215,78 @@ function renderNotes(notes = sharedNotes, state = "ready") {
     const message = document.createElement("p"); const footer = document.createElement("footer");
     const name = document.createElement("span"); const date = document.createElement("time");
     message.textContent = note.message; name.textContent = `— ${note.name}`; date.textContent = note.date;
-    footer.append(name, date); article.append(message, footer); wall.append(article);
+    footer.append(name, date); article.append(message, footer);
+    if (note.canDelete) {
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "note-delete";
+      deleteButton.type = "button";
+      deleteButton.textContent = "删除";
+      deleteButton.setAttribute("aria-label", `删除 ${note.name} 的这条留言`);
+      deleteButton.addEventListener("click", () => deleteOwnNote(note.id, deleteButton));
+      article.append(deleteButton);
+    }
+    wall.append(article);
   });
 }
 
-function formatNoteDate(value) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "24 / 7";
-  return new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" }).format(date).replace("/", ".");
+function createNoteOwnerToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const binary = Array.from(bytes, (value) => String.fromCharCode(value)).join("");
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
-function resultError(result, fallbackMessage) {
-  if (!result?.error) return null;
-  if (result.error instanceof Error) return result.error;
-  return new Error(result.error.message || result.error.msg || fallbackMessage);
+function getNoteOwnerToken() {
+  if (noteOwnerToken) return noteOwnerToken;
+  try {
+    const stored = localStorage.getItem(NOTES_OWNER_KEY) || "";
+    if (/^[A-Za-z0-9_-]{32,128}$/.test(stored)) {
+      noteOwnerToken = stored;
+      return noteOwnerToken;
+    }
+  } catch { /* private mode */ }
+  noteOwnerToken = createNoteOwnerToken();
+  try { localStorage.setItem(NOTES_OWNER_KEY, noteOwnerToken); } catch { /* private mode */ }
+  return noteOwnerToken;
 }
 
-async function getCloudbaseDb() {
-  if (!cloudbaseDbPromise) {
-    cloudbaseDbPromise = (async () => {
-      if (!window.cloudbase?.init) throw new Error("CloudBase SDK unavailable");
-      const app = window.cloudbase.init({ env: CLOUDBASE_ENV_ID, region: "ap-shanghai" });
-      const auth = typeof app.auth === "function" ? app.auth() : app.auth;
-      if (!auth) throw new Error("CloudBase Auth unavailable");
+async function requestNotesApi(path = "", options = {}) {
+  const headers = new Headers(options.headers || {});
+  headers.set("Accept", "application/json");
+  headers.set("X-Note-Owner-Token", getNoteOwnerToken());
+  if (options.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+  const response = await fetch(`${NOTES_API_URL}${path}`, { ...options, headers, mode: "cors" });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "留言墙暂时无法连接");
+  return data;
+}
 
-      if (typeof auth.signInAnonymously === "function") {
-        const loginResult = await auth.signInAnonymously();
-        const loginError = resultError(loginResult, "Unable to sign in anonymously");
-        if (loginError) throw loginError;
-      } else if (typeof auth.anonymousAuthProvider === "function") {
-        await auth.anonymousAuthProvider().signIn();
-      } else {
-        throw new Error("Anonymous sign-in unavailable");
-      }
+async function loadSharedNotes() {
+  const data = await requestNotesApi("?limit=42");
+  return Array.isArray(data.notes) ? data.notes : [];
+}
 
-      const db = app.rdb();
-      if (!db) throw new Error("CloudBase database unavailable");
-      return db;
-    })().catch((error) => {
-      cloudbaseDbPromise = null;
-      throw error;
-    });
+async function deleteOwnNote(id, button) {
+  if (!window.confirm("确定删除这条留言吗？删除后不能恢复。")) return;
+  button.disabled = true;
+  button.textContent = "删除中…";
+  try {
+    await requestNotesApi(`?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    sharedNotes = sharedNotes.filter((note) => note.id !== id);
+    renderNotes();
+    showToast("这条留言已经删除。");
+  } catch (error) {
+    console.error("Unable to delete note", error);
+    button.disabled = false;
+    button.textContent = "删除";
+    showToast(error.message || "暂时无法删除，请稍后再试。");
   }
-  return cloudbaseDbPromise;
-}
-
-async function loadCloudbaseNotes() {
-  const db = await getCloudbaseDb();
-  const result = await db
-    .from(NOTES_TABLE)
-    .select("id,name,message,created_at")
-    .order("created_at", { ascending: false })
-    .limit(42);
-  const error = resultError(result, "Unable to load message wall");
-  if (error) throw error;
-  return (Array.isArray(result.data) ? result.data : [])
-    .map((note) => ({
-      id: `cloudbase-${note.id}`,
-      name: String(note.name || "").trim().slice(0, 16) || "一位 42",
-      message: String(note.message || "").trim().slice(0, 100),
-      date: formatNoteDate(note.created_at),
-    }))
-    .filter((note) => note.message);
 }
 
 async function refreshNotes({ silent = false } = {}) {
   if (!silent && !sharedNotes.length) renderNotes([], "loading");
   try {
-    sharedNotes = await loadCloudbaseNotes(); renderNotes();
+    sharedNotes = await loadSharedNotes(); renderNotes();
   } catch (error) {
     console.error("Unable to refresh the 42 wall", error);
     if (!sharedNotes.length) renderNotes([], "error");
@@ -310,19 +315,19 @@ function initLetters() {
     submitButton.disabled = true;
     submitButton.textContent = "正在贴上…";
     try {
-      const db = await getCloudbaseDb();
-      const result = await db.from(NOTES_TABLE).insert({ name, message: message.slice(0, 100) });
-      const error = resultError(result, "Unable to post message");
-      if (error) throw error;
+      await requestNotesApi("", {
+        method: "POST",
+        body: JSON.stringify({ name, message: message.slice(0, 100), startedAt: letterStartedAt }),
+      });
       try { localStorage.setItem(NOTES_COOLDOWN_KEY, String(Date.now())); } catch { /* private mode */ }
       form.reset();
       $("#letter-count").textContent = "0 / 100";
+      letterStartedAt = Date.now();
       showToast("留言贴好啦，所有 42 都能看到！");
       await refreshNotes({ silent: true });
     } catch (error) {
       console.error("Unable to post to the 42 wall", error);
-      const detail = String(error?.message || error).toLowerCase();
-      showToast(detail.includes("please wait") ? "先等 15 秒，再贴下一张纸条吧。" : "暂时没贴成功，请稍后再试。");
+      showToast(error.message || "暂时没贴成功，请稍后再试。");
     } finally {
       submitButton.disabled = false;
       submitButton.innerHTML = originalButton;

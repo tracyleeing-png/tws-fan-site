@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#fff4b8" />
+    <title>TWS 42 留言管理</title>
+    <link rel="icon" href="assets/favicon.svg?v=tws" type="image/svg+xml" />
+    <link rel="stylesheet" href="admin.css?v=message-admin-v1" />
+    <script src="admin.js?v=message-admin-v1" defer></script>
+  </head>
+  <body>
+    <header class="admin-topbar">
+      <a class="admin-brand" href="index.html#letters" aria-label="返回 TWS 留言墙">
+        <span>42</span><b>24/7 WITH TWS</b>
+      </a>
+      <time id="admin-clock">00:42:00</time>
+    </header>
+
+    <main class="admin-shell">
+      <section class="admin-intro">
+        <p>MESSAGE CONTROL · 23:42</p>
+        <h1>留言管理</h1>
+        <span>只有持有管理员密钥的人可以查看管理列表和删除留言。</span>
+      </section>
+
+      <section class="admin-login" id="admin-login">
+        <form id="admin-login-form">
+          <label for="admin-token">管理员密钥</label>
+          <div class="admin-login-row">
+            <input id="admin-token" type="password" autocomplete="current-password" required placeholder="请输入管理员密钥" />
+            <button type="submit">进入后台</button>
+          </div>
+          <p id="admin-login-status" role="status" aria-live="polite">密钥只会临时保存在当前标签页。</p>
+        </form>
+      </section>
+
+      <section class="admin-dashboard" id="admin-dashboard" hidden>
+        <div class="admin-toolbar">
+          <div><span>LIVE WALL</span><strong id="admin-count">0 条留言</strong></div>
+          <div class="admin-actions"><button id="admin-refresh" type="button">刷新</button><button id="admin-logout" type="button">退出</button></div>
+        </div>
+        <div class="admin-notes" id="admin-notes" aria-live="polite"></div>
+      </section>
+    </main>
+  </body>
+</html>

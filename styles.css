@@ -1410,6 +1410,30 @@ button {
   border-radius: 999px;
 }
 
+.note-delete {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  min-height: 30px;
+  padding: 6px 11px;
+  color: #43546a;
+  font: 800 11px/1 var(--body);
+  cursor: pointer;
+  border: 1px solid rgba(16, 35, 63, .14);
+  background: rgba(255, 255, 255, .64);
+  border-radius: 999px;
+  transition: color .2s, border-color .2s, background .2s;
+}
+
+.note-delete:hover,
+.note-delete:focus-visible {
+  color: #b32a40;
+  border-color: rgba(179, 42, 64, .3);
+  background: rgba(255, 255, 255, .9);
+}
+
+.note-delete:disabled { cursor: wait; opacity: .56; }
+
 .letter-form button:disabled {
   cursor: wait;
   opacity: .58;
@@ -2610,6 +2634,7 @@ button {
 
   .note { min-height: 180px; scroll-snap-align: center; }
   .note-empty { min-height: 180px; }
+  .note-delete { top: 13px; right: 13px; min-height: 28px; padding: 5px 10px; font-size: 10px; }
 
   .finale-v2 {
     min-height: 700px;
