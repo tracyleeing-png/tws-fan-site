@@ -1,4 +1,4 @@
-const NOTES_API_URL = "https://tws-247-with-tws.tracyleeing.chatgpt.site/api/notes";
+const NOTES_API_URL = "https://tws0122-d1gmao1jw1ea51891-1482514859.ap-shanghai.app.tcloudbase.com/api/notes";
 const ADMIN_SESSION_KEY = "tws-42-admin-session";
 
 const loginSection = document.querySelector("#admin-login");
